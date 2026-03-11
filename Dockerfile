@@ -3,13 +3,17 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# More memory for Node.js on low-RAM devices (e.g. Umbrel/Raspberry Pi)
+ENV NODE_OPTIONS="--max_old_space_size=512"
+
 # Install dependencies first (layer cache)
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy source and build
+# TypeScript is checked locally; skip tsc in Docker to avoid OOM on ARM devices
 COPY . .
-RUN npm run build
+RUN npx vite build
 
 # ─── Stage 2: Serve ───────────────────────────────────────────────────────────
 FROM nginx:alpine AS runner
