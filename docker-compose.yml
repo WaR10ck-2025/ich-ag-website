@@ -1,0 +1,7 @@
+services:
+  ich-ag-website:
+    build: .
+    container_name: ich-ag-website
+    restart: unless-stopped
+    ports:
+      - "80:80"
